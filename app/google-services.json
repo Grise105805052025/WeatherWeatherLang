@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "130325760548",
+    "project_id": "weatherweatherlang-1bf6e",
+    "storage_bucket": "weatherweatherlang-1bf6e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130325760548:android:f607224daecdbbc97fa6b1",
+        "android_client_info": {
+          "package_name": "klo0812.mlaserna.weatherweatherlang"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIdRpOSQFFap5EbE6FJJ3atpOmz-zdx4A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
