@@ -46,6 +46,7 @@ dependencies {
     // Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // Compose
     implementation(libs.androidx.activity.compose)
@@ -55,9 +56,12 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.play.services.location)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.navigation.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     // Room
     implementation(libs.androidx.room.common.jvm)
@@ -72,7 +76,11 @@ dependencies {
     implementation(libs.firebase.database)
 
     // OkHttp
-    implementation(libs.extension.okhttp)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+
+    // Glide
+    implementation(libs.glide)
 
     // Unit Testing
     androidTestImplementation(libs.androidx.junit)

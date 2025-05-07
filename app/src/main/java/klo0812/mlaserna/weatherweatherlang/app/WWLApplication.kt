@@ -4,24 +4,29 @@ import android.app.Application
 import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import klo0812.mlaserna.weatherweatherlang.database.AppDataBase
 
 class WWLApplication : Application() {
 
     companion object {
-        const val TAG = "WWLApplication"
-    }
+        val TAG: String? = WWLApplication::class.simpleName
 
-    private lateinit var firebaseAuth: FirebaseAuth
-    var currentUser: FirebaseUser? = null
-        private set
+        @Volatile private var firebaseAuth: FirebaseAuth? = null
+
+        fun getFirebaseAuth (): FirebaseAuth {
+            return firebaseAuth ?: synchronized(this) {
+                firebaseAuth ?: FirebaseAuth.getInstance().also { firebaseAuth = it }
+            }
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
-        firebaseAuth = FirebaseAuth.getInstance()
-        firebaseAuth.addAuthStateListener { firebaseAuth ->
-            currentUser = firebaseAuth.currentUser
+        AppDataBase.getInstance(this)
+        firebaseAuth = getFirebaseAuth()
+        firebaseAuth!!.addAuthStateListener { firebaseAuth ->
+            val currentUser = firebaseAuth.currentUser
             if (currentUser != null) {
                 Log.d(TAG, "New user has signed in.")
             } else {

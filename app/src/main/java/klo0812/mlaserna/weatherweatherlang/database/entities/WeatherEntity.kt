@@ -6,13 +6,14 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.google.gson.Gson
-import klo0812.mlaserna.weatherweatherlang.models.Clouds
-import klo0812.mlaserna.weatherweatherlang.models.Coordinates
-import klo0812.mlaserna.weatherweatherlang.models.Data
-import klo0812.mlaserna.weatherweatherlang.models.Rain
-import klo0812.mlaserna.weatherweatherlang.models.Sys
-import klo0812.mlaserna.weatherweatherlang.models.Weather
-import klo0812.mlaserna.weatherweatherlang.models.Wind
+import klo0812.mlaserna.weatherweatherlang.models.response.impl.Clouds
+import klo0812.mlaserna.weatherweatherlang.models.response.impl.Coordinates
+import klo0812.mlaserna.weatherweatherlang.models.response.impl.Data
+import klo0812.mlaserna.weatherweatherlang.models.response.impl.Rain
+import klo0812.mlaserna.weatherweatherlang.models.response.impl.Sys
+import klo0812.mlaserna.weatherweatherlang.models.response.impl.Weather
+import klo0812.mlaserna.weatherweatherlang.models.response.impl.WeatherResponseModel
+import klo0812.mlaserna.weatherweatherlang.models.response.impl.Wind
 
 @Entity
 @TypeConverters(
@@ -29,8 +30,9 @@ data class WeatherEntity(
     val id: Long,
     @Embedded
     val userEntity: UserEntity,
+    val timestamp: Long,
     val coor: Coordinates,
-    val weather: Weather,
+    val weather: Weather, // use only the primary weather to forecast
     val base: String,
     val main: Data,
     val visibility: Int,
@@ -43,6 +45,27 @@ data class WeatherEntity(
     val name: String,
     val cod: Int
 ) {
+
+    constructor(userEntity: UserEntity, data: WeatherResponseModel, timestamp: Long) : this(
+        id = System.currentTimeMillis() + (data.id ?: 0),
+        userEntity = UserEntity(userEntity.id),
+        timestamp = timestamp,
+        coor = data.coord ?: Coordinates(0.0, 0.0),
+        weather =
+            if (data.weather != null && data.weather.isNotEmpty()) data.weather[0]
+            else Weather(0, "", "", ""),
+        base = data.base ?: "",
+        main = data.main ?: Data(0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0),
+        visibility = data.visibility ?: 0,
+        wind = data.wind ?: Wind(0.0, 0, 0.0),
+        rain = data.rain ?: Rain(0.0),
+        clouds = data.clouds ?: Clouds(0),
+        dt = data.dt ?: 0,
+        sys = data.sys ?: Sys(0, 0, "", 0, 0),
+        timezone = data.timezone ?: 0,
+        name = data.name ?: "",
+        cod = data.cod ?: 0
+    )
 
     class CoordinatesConverter {
         @TypeConverter

@@ -19,7 +19,6 @@ import androidx.navigation.NavController
 import klo0812.mlaserna.weatherweatherlang.composables.components.CloudBackground
 import klo0812.mlaserna.weatherweatherlang.composables.controllers.WelcomePageNavController
 import klo0812.mlaserna.weatherweatherlang.composables.controllers.WelcomeScreens
-import klo0812.mlaserna.weatherweatherlang.composables.pages.dashboard.DashboardPage
 import klo0812.mlaserna.weatherweatherlang.ui.theme.SkyClearLight
 import klo0812.mlaserna.weatherweatherlang.ui.theme.SkyClearMedium
 
@@ -33,8 +32,7 @@ fun WelcomePage(
         SkyClearMedium
     )
     CloudBackground(
-        modifier = Modifier
-            .navigationBarsPadding(),
+        modifier = Modifier.navigationBarsPadding(),
         colors = colors
     ) {
         Column(
@@ -60,5 +58,5 @@ fun WelcomePage(
 @Preview
 @Composable
 fun WelcomePagePreview() {
-    DashboardPage(navController = null)
+    WelcomePage(navController = null)
 }

@@ -26,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,11 +48,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
 import klo0812.mlaserna.weatherweatherlang.composables.components.button_shape
 import klo0812.mlaserna.weatherweatherlang.composables.components.field_shape
 import klo0812.mlaserna.weatherweatherlang.composables.controllers.WelcomeScreens
-import klo0812.mlaserna.weatherweatherlang.models.LoginViewModel
+import klo0812.mlaserna.weatherweatherlang.models.view.LoginViewModel
 
 @Composable
 fun LoginContent(
@@ -59,7 +59,6 @@ fun LoginContent(
     welcomePageNavController: NavController?
 ) {
     val context = LocalContext.current
-    val firebaseAuth = FirebaseAuth.getInstance()
     val viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory())
     val focusManager = LocalFocusManager.current
 
@@ -126,7 +125,6 @@ fun LoginContent(
                     if (allowedToLogin) {
                         viewModel.loginUserWithEmail(
                             context,
-                            firebaseAuth,
                             mainNavController!!
                         )
                     }
@@ -158,7 +156,6 @@ fun LoginContent(
             onClick = {
                 viewModel.loginUserWithEmail(
                     context,
-                    firebaseAuth,
                     mainNavController!!
                 )
             }
@@ -187,7 +184,7 @@ fun LoginContent(
         Spacer(modifier = Modifier.height(20.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             TextButton(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1.0f),
                 shape = button_shape,
                 onClick = {
                     Toast.makeText(context, "Not implemented yet!", Toast.LENGTH_SHORT).show()
@@ -197,7 +194,7 @@ fun LoginContent(
             }
             Spacer(modifier = Modifier.width(8.dp))
             TextButton(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1.0f),
                 shape = button_shape,
                 onClick = {
                     welcomePageNavController!!.navigate(
@@ -214,5 +211,6 @@ fun LoginContent(
 @Preview
 @Composable
 fun LoginContentPreview() {
+    //TODO: Find a way to supply navController properly
     LoginContent(null, null)
 }

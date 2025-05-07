@@ -1,4 +1,4 @@
-package klo0812.mlaserna.weatherweatherlang.models
+package klo0812.mlaserna.weatherweatherlang.models.view
 
 import android.content.Context
 import android.util.Log
@@ -10,9 +10,8 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
+import klo0812.mlaserna.weatherweatherlang.app.WWLApplication
 import klo0812.mlaserna.weatherweatherlang.composables.controllers.MainScreens
-import klo0812.mlaserna.weatherweatherlang.composables.pages.welcome.TAG
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +22,8 @@ class RegistrationViewModel(
 ): ViewModel() {
 
     companion object {
+        val TAG: String? = RegistrationViewModel::class.simpleName
+
         fun Factory(): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 RegistrationViewModel(createSavedStateHandle())
@@ -31,14 +32,14 @@ class RegistrationViewModel(
 
         const val PWD_REGEX = "^(?=.*[A-Z])(?=.*[!@#\$%^&*(),.?\":{}|<>])(?=.*[0-9]).{8,}\$"
         const val EMAIL_REGEX = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
-        
+
         const val EMAIL_KEY = "email"
         const val PWD_KEY = "password"
         const val CON_PWD_KEY = "confirmPassword"
         const val ALLOWED_REGISTER = "allowedToRegister"
         const val REGISTERING = "registering"
     }
-    
+
     private val _email = MutableStateFlow(
         saveStateHandle.get<String>(EMAIL_KEY) ?: ""
     )
@@ -60,7 +61,7 @@ class RegistrationViewModel(
         val email = email.value
         return EMAIL_REGEX.toRegex().matches(email)
     }
-    
+
     private val _password = MutableStateFlow(
         saveStateHandle.get<String>(PWD_KEY) ?: ""
     )
@@ -99,7 +100,7 @@ class RegistrationViewModel(
             return errors
         }
     }
-    
+
     private val _confirmPassword = MutableStateFlow(
         saveStateHandle.get<String>(CON_PWD_KEY) ?: ""
     )
@@ -142,12 +143,11 @@ class RegistrationViewModel(
     private val lock = Object()
     fun registerUserWithEmail(
         context: Context,
-        auth: FirebaseAuth,
         mainNavController: NavController
     ) {
         synchronized(lock) {
             updateRegistering(true)
-            auth.createUserWithEmailAndPassword(email.value, password.value)
+            WWLApplication.getFirebaseAuth().createUserWithEmailAndPassword(email.value, password.value)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         Log.d(TAG, "New user created!")

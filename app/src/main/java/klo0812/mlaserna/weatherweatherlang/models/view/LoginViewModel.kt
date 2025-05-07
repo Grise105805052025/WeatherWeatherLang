@@ -1,4 +1,4 @@
-package klo0812.mlaserna.weatherweatherlang.models
+package klo0812.mlaserna.weatherweatherlang.models.view
 
 import android.content.Context
 import android.util.Log
@@ -10,9 +10,8 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
+import klo0812.mlaserna.weatherweatherlang.app.WWLApplication
 import klo0812.mlaserna.weatherweatherlang.composables.controllers.MainScreens
-import klo0812.mlaserna.weatherweatherlang.composables.pages.welcome.TAG
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +21,8 @@ open class LoginViewModel(
 ): ViewModel() {
 
     companion object {
+        val TAG: String = LoginViewModel::class.java.simpleName
+
         fun Factory(): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 LoginViewModel(createSavedStateHandle())
@@ -75,14 +76,13 @@ open class LoginViewModel(
     private val lock = Object()
     fun loginUserWithEmail(
         context: Context,
-        auth: FirebaseAuth,
         mainNavController: NavController
     ) {
         synchronized(lock) {
             updateLoggingIn(true)
             // Firebase authentication hashes user password during request so we don't need to
             // implement our own one-way hashing algorithm
-            auth.signInWithEmailAndPassword(email.value, password.value)
+            WWLApplication.getFirebaseAuth().signInWithEmailAndPassword(email.value, password.value)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         Toast.makeText(context, "Successfully logged in!", Toast.LENGTH_SHORT).show()

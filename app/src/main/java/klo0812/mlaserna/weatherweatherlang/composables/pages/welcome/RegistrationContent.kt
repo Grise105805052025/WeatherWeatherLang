@@ -47,14 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
 import klo0812.mlaserna.weatherweatherlang.composables.components.FieldInstructionText
 import klo0812.mlaserna.weatherweatherlang.composables.components.button_shape
 import klo0812.mlaserna.weatherweatherlang.composables.components.field_shape
 import klo0812.mlaserna.weatherweatherlang.composables.controllers.WelcomeScreens
-import klo0812.mlaserna.weatherweatherlang.models.RegistrationViewModel
-
-const val TAG = "RegistrationContent"
+import klo0812.mlaserna.weatherweatherlang.models.view.RegistrationViewModel
 
 @Composable
 fun RegistrationContent(
@@ -62,7 +59,6 @@ fun RegistrationContent(
     welcomePageNavController: NavController?
 ) {
     val context = LocalContext.current
-    val firebaseAuth = FirebaseAuth.getInstance()
     val viewModel: RegistrationViewModel = viewModel(factory = RegistrationViewModel.Factory())
     val focusManager = LocalFocusManager.current
 
@@ -224,7 +220,6 @@ fun RegistrationContent(
                     if (allowedToRegister) {
                         viewModel.registerUserWithEmail(
                             context,
-                            firebaseAuth,
                             mainNavController!!
                         )
                     }
@@ -256,7 +251,6 @@ fun RegistrationContent(
             onClick = {
                 viewModel.registerUserWithEmail(
                     context,
-                    firebaseAuth,
                     mainNavController!!
                 )
             }
@@ -299,5 +293,6 @@ fun RegistrationContent(
 @Preview
 @Composable
 fun RegistrationContentPreview() {
-    RegistrationContent(null, null)
+    //TODO: Find a way to supply navController properly
+    RegistrationContent( null, null)
 }
