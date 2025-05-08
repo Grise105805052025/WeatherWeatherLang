@@ -1,8 +1,10 @@
 package klo0812.mlaserna.weatherweatherlang.composables.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -14,18 +16,31 @@ import androidx.compose.ui.tooling.preview.Preview
 fun GradientBackground(
     modifier: Modifier = Modifier,
     isVerticalGradient: Boolean = true,
-    colors: List<Color>
+    alphaColor: Color = Color.Transparent,
+    colors: List<Color>,
+    content: @Composable () -> Unit?
 ) {
+    val animatedColors = colors.map { color ->
+        animateColorAsState(targetValue = color, animationSpec = tween(durationMillis = 1000), label = "" )
+    }
+    val animatedColorList = animatedColors.map { it.value }
     val modifier = modifier.background(
-        GradientBackgroundBrush(
+        gradientBackgroundBrush(
             isVerticalGradient,
-            colors)
+            animatedColorList
+        )
     )
-    Box(modifier = modifier) { }
+    Surface(
+        modifier = modifier
+            .fillMaxSize(),
+        color = alphaColor.copy(alpha = 0.1f)
+    ) {
+        content()
+    }
 }
 
 @Composable
-fun GradientBackgroundBrush (
+fun gradientBackgroundBrush (
     isVerticalGradient: Boolean,
     colors: List<Color>
 ) : Brush {
@@ -52,5 +67,7 @@ fun GradientBackgroundPreview() {
             klo0812.mlaserna.weatherweatherlang.ui.theme.SkyClearLight,
             klo0812.mlaserna.weatherweatherlang.ui.theme.SkyClearMedium
         )
-    )
+    ) {
+        // do nothing
+    }
 }

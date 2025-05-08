@@ -12,7 +12,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +21,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -62,9 +60,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import klo0812.mlaserna.weatherweatherlang.app.WWLApplication
-import klo0812.mlaserna.weatherweatherlang.composables.components.CloudBackground
 import klo0812.mlaserna.weatherweatherlang.composables.components.DayNightCycleAnimation
 import klo0812.mlaserna.weatherweatherlang.composables.components.DigitalClock
+import klo0812.mlaserna.weatherweatherlang.composables.components.GradientBackground
 import klo0812.mlaserna.weatherweatherlang.composables.components.WeatherItem
 import klo0812.mlaserna.weatherweatherlang.composables.components.button_shape
 import klo0812.mlaserna.weatherweatherlang.database.AppDataBase
@@ -72,13 +70,14 @@ import klo0812.mlaserna.weatherweatherlang.database.entities.WeatherEntity
 import klo0812.mlaserna.weatherweatherlang.models.view.DashboardViewModel
 import klo0812.mlaserna.weatherweatherlang.models.view.WeatherViewModel
 import klo0812.mlaserna.weatherweatherlang.services.location.LocationService
+import klo0812.mlaserna.weatherweatherlang.ui.dynamic.rememberDynamicColorScheme
 import klo0812.mlaserna.weatherweatherlang.ui.font.digitalClockFamily
-import klo0812.mlaserna.weatherweatherlang.ui.theme.SkyClearLight
-import klo0812.mlaserna.weatherweatherlang.ui.theme.SkyClearMedium
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 
 @Composable
 fun DashboardPage(
@@ -86,10 +85,6 @@ fun DashboardPage(
     viewModel: DashboardViewModel? = null,
     weatherViewModel: WeatherViewModel? = null
 ) {
-    var colors = listOf(
-        SkyClearLight,
-        SkyClearMedium
-    )
     val context = LocalContext.current
     val viewModel: DashboardViewModel = viewModel ?: viewModel(
         factory = DashboardViewModel.Factory(navController)
@@ -125,9 +120,7 @@ fun DashboardPage(
         }
     )
 
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Latest", "History")
-
+    // Start checking location data after permissions have been allowed
     LaunchedEffect(hasLocationPermission.value) {
         if (hasLocationPermission.value) {
             startLocationUpdates(
@@ -137,10 +130,28 @@ fun DashboardPage(
         }
     }
 
-    CloudBackground(
+    var currentColorScheme by remember {
+        mutableStateOf(rememberDynamicColorScheme())
+    }
+
+    // Change background color based on time of day
+    LaunchedEffect(Unit) {
+        while (true) {
+            currentColorScheme = rememberDynamicColorScheme(LocalTime.now())
+            delay(60000) // check every minute
+        }
+    }
+
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    val tabs = listOf("Latest", "History")
+
+    GradientBackground(
         modifier = Modifier
             .navigationBarsPadding(),
-        colors = colors
+        colors = listOf(
+            currentColorScheme.startColor,
+            currentColorScheme.endColor
+        )
     ) {
 
         if (showDialog) {
@@ -335,32 +346,32 @@ fun LandingPageContent(
     Surface(
         color = Color.Transparent
     ) {
-        if (weatherData == null)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(color = Color.LightGray.copy(alpha = 0.4f))
-            ) {
-                Row(
+        Column {
+            Spacer(Modifier.height(8.dp))
+            if (weatherData == null)
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(color = Color.LightGray.copy(alpha = 0.4f))
                 ) {
-                    CircularProgressIndicator(
+                    Row(
                         modifier = Modifier
-                            .width(50.dp)
-                            .height(50.dp)
-                    )
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .width(50.dp)
+                                .height(50.dp)
+                        )
+                    }
                 }
+            else {
+                WeatherItem(weatherEntity = weatherData)
             }
-        else {
-            WeatherItem(
-                isLandingScreen = true,
-                weatherEntity = weatherData
-            )
         }
     }
 }
@@ -386,9 +397,7 @@ fun WeatherListContent() {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(weatherList) { weather ->
-            WeatherItem(
-                isLandingScreen = false,
-                weatherEntity = weather)
+            WeatherItem(weatherEntity = weather)
         }
     }
 }

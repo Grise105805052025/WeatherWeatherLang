@@ -19,22 +19,24 @@ import klo0812.mlaserna.weatherweatherlang.R
 fun CloudBackground(
     modifier: Modifier = Modifier,
     isVerticalGradient: Boolean = true,
+    alphaColor: Color = Color.Transparent,
     colors: List<Color>,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit?
 ) {
     var image = ImageBitmap.imageResource(R.drawable.cloud)
     val brush = remember(image) { ShaderBrush(ImageShader(image, TileMode.Repeated, TileMode.Repeated)) }
     Surface {
         GradientBackground(
-            modifier = modifier,
-            isVerticalGradient,
-            colors
-        )
+            isVerticalGradient = isVerticalGradient,
+            colors = colors
+        ) {
+            // do nothing
+        }
         Surface(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .background(brush),
-            color = Color.White.copy(alpha = 0.1f)
+            color = alphaColor.copy(alpha = 0.1f)
         ) {
             content()
         }

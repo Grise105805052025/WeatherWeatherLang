@@ -59,7 +59,6 @@ import java.util.Calendar
 
 @Composable
 fun WeatherItem(
-    isLandingScreen: Boolean = false,
     weatherEntity: WeatherEntity? = null
 ) {
 
@@ -92,14 +91,7 @@ fun WeatherItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(
-                RoundedCornerShape(
-                    topStart = if (isLandingScreen) 0.dp else 8.dp,
-                    topEnd = if (isLandingScreen) 0.dp else 8.dp,
-                    bottomStart = 8.dp,
-                    bottomEnd = 8.dp
-                )
-            )
+            .clip(RoundedCornerShape(8.dp))
             .background(color = Color.LightGray.copy(alpha = 0.4f))
     ) {
         Column(
