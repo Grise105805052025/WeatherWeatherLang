@@ -60,6 +60,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import klo0812.mlaserna.weatherweatherlang.app.WWLApplication
 import klo0812.mlaserna.weatherweatherlang.composables.components.CloudBackground
+import klo0812.mlaserna.weatherweatherlang.composables.components.DayNightCycleAnimation
 import klo0812.mlaserna.weatherweatherlang.composables.components.WeatherItem
 import klo0812.mlaserna.weatherweatherlang.composables.components.button_shape
 import klo0812.mlaserna.weatherweatherlang.database.AppDataBase
@@ -182,6 +183,7 @@ fun DashboardPage(
             )
         }
         Surface (color = Color.Transparent) {
+            DayNightCycleAnimation()
             Column(
                 modifier = Modifier.fillMaxSize(),
             ) {
@@ -236,7 +238,7 @@ fun DashboardPage(
                         exit = fadeOut(animationSpec = tween(durationMillis = 300)),
                     ) {
                         Column {
-                            Box (modifier = Modifier.weight(0.33f))
+                            Box (modifier = Modifier.weight(0.33f)) { }
                             Column (modifier = Modifier.weight(0.67f)) {
                                 TabRow(
                                     selectedTabIndex = selectedTabIndex) {
@@ -354,13 +356,14 @@ fun LandingPageContent(
 fun WeatherListContent() {
     val context = LocalContext.current
     val currentUser = WWLApplication.getFirebaseAuth().currentUser
+
     var weatherList by rememberSaveable {
         mutableStateOf(emptyList<WeatherEntity>())
     }
 
     LaunchedEffect(Unit) {
         CoroutineScope(IO).launch {
-            weatherList = AppDataBase.getInstance(context).weatherDao().getAll(currentUser!!.uid)
+            weatherList = AppDataBase.getInstance(context).weatherDao().getAll(currentUser!!.uid).reversed()
         }
     }
 
