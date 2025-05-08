@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -42,7 +43,8 @@ class WeatherItemModel(
     }
 
     internal fun initTemperature(): String {
-        return "${data?.main?.temp}°C"
+        val df = DecimalFormat("#.00")
+        return "${df.format(data?.main?.temp)}°C"
     }
 
     init {
