@@ -12,6 +12,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +33,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -61,6 +64,7 @@ import androidx.navigation.NavController
 import klo0812.mlaserna.weatherweatherlang.app.WWLApplication
 import klo0812.mlaserna.weatherweatherlang.composables.components.CloudBackground
 import klo0812.mlaserna.weatherweatherlang.composables.components.DayNightCycleAnimation
+import klo0812.mlaserna.weatherweatherlang.composables.components.DigitalClock
 import klo0812.mlaserna.weatherweatherlang.composables.components.WeatherItem
 import klo0812.mlaserna.weatherweatherlang.composables.components.button_shape
 import klo0812.mlaserna.weatherweatherlang.database.AppDataBase
@@ -68,6 +72,7 @@ import klo0812.mlaserna.weatherweatherlang.database.entities.WeatherEntity
 import klo0812.mlaserna.weatherweatherlang.models.view.DashboardViewModel
 import klo0812.mlaserna.weatherweatherlang.models.view.WeatherViewModel
 import klo0812.mlaserna.weatherweatherlang.services.location.LocationService
+import klo0812.mlaserna.weatherweatherlang.ui.font.digitalClockFamily
 import klo0812.mlaserna.weatherweatherlang.ui.theme.SkyClearLight
 import klo0812.mlaserna.weatherweatherlang.ui.theme.SkyClearMedium
 import kotlinx.coroutines.CoroutineScope
@@ -121,7 +126,7 @@ fun DashboardPage(
     )
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Main", "History")
+    val tabs = listOf("Latest", "History")
 
     LaunchedEffect(hasLocationPermission.value) {
         if (hasLocationPermission.value) {
@@ -266,11 +271,19 @@ fun DashboardPage(
                 }
             }
             Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.Top,
             ) {
+                DigitalClock(
+                    textColor = Color.White,
+                    textStyle = TextStyle(
+                        fontSize = 24.sp,
+                        fontFamily = digitalClockFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                )
+                Spacer(modifier = Modifier.weight(1.0f))
                 IconButton(
                     modifier = Modifier.size(24.dp),
                     onClick = {
@@ -278,7 +291,8 @@ fun DashboardPage(
                     }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.Logout,
-                        contentDescription = "Logout!"
+                        contentDescription = "Logout!",
+                        tint = Color.White
                     )
                 }
             }
