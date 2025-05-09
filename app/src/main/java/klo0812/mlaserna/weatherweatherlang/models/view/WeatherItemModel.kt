@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class WeatherItemModel(
@@ -25,9 +26,9 @@ class WeatherItemModel(
     var cityName: String? by mutableStateOf("Unknown City")
         private set
 
-    internal fun initTime(): String {
+    internal fun initTimestamp(): String {
         return if (data != null) {
-            SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault()).format(data.timestamp)
+            SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(data.timestamp)
         } else {
             ""
         }
@@ -42,9 +43,18 @@ class WeatherItemModel(
         }
     }
 
-    internal fun initTemperature(): String {
+    internal fun initTemperature(temp: Double?): String {
         val df = DecimalFormat("#.00")
-        return "${df.format(data?.main?.temp)}°C"
+        return "${df.format(temp)}°C"
+    }
+
+    internal fun initTime(time: Long?): String {
+        return if (data != null && time != null) {
+            val date = Date(time * 1000L)
+            SimpleDateFormat("hh:mm a", Locale.getDefault()).format(date)
+        } else {
+            "Not available"
+        }
     }
 
     init {

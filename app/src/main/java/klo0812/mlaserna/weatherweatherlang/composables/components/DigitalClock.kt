@@ -45,7 +45,7 @@ fun ClockDisplay(
     textColor: Color,
     texStyle: TextStyle,
 ) {
-    val formatter = DateTimeFormatter.ofPattern("HH:mm:ss a")
+    val formatter = DateTimeFormatter.ofPattern("hh:mm:ss a")
     val formattedTime = time.format(formatter)
     Text(
         text = formattedTime,

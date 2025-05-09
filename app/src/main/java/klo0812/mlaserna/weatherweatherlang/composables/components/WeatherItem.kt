@@ -8,15 +8,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.outlined.CloudOff
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -59,12 +64,17 @@ import java.util.Calendar
 
 @Composable
 fun WeatherItem(
-    weatherEntity: WeatherEntity? = null
+    weatherEntity: WeatherEntity? = null,
+    showDetails: Boolean = false
 ) {
-
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+
     var weatherItemModel by remember {
         mutableStateOf<WeatherItemModel?>(null)
+    }
+    var showDetails by remember {
+        mutableStateOf<Boolean>(showDetails)
     }
 
     LaunchedEffect(weatherEntity) {
@@ -76,7 +86,7 @@ fun WeatherItem(
     }
 
     val timestamp by remember(weatherItemModel) {
-        derivedStateOf { weatherItemModel?.initTime() }
+        derivedStateOf { weatherItemModel?.initTimestamp() }
     }
     val cityName by remember(weatherItemModel) {
         derivedStateOf { weatherItemModel?.cityName }
@@ -85,7 +95,16 @@ fun WeatherItem(
         derivedStateOf { weatherItemModel?.initDescription() }
     }
     val temperature by remember(weatherItemModel) {
-        derivedStateOf { weatherItemModel?.initTemperature() }
+        derivedStateOf { weatherItemModel?.initTemperature(weatherItemModel?.data?.main?.temp) }
+    }
+    val feels_like by remember(weatherItemModel) {
+        derivedStateOf { weatherItemModel?.initTemperature(weatherItemModel?.data?.main?.feels_like) }
+    }
+    val sunrise by remember(weatherItemModel) {
+        derivedStateOf { weatherItemModel?.initTime(weatherItemModel?.data?.sys?.sunrise) }
+    }
+    val sunset by remember(weatherItemModel) {
+        derivedStateOf { weatherItemModel?.initTime(weatherItemModel?.data?.sys?.sunset) }
     }
 
     Box(
@@ -95,8 +114,8 @@ fun WeatherItem(
             .background(color = Color.LightGray.copy(alpha = 0.4f))
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 modifier = Modifier
@@ -174,9 +193,16 @@ fun WeatherItem(
                         fontSize = 24.sp
                     ))
             }
+            if (showDetails) {
+                WeatherExtraData("Feels like", feels_like)
+                WeatherExtraData("Sunrise", sunrise)
+                WeatherExtraData("Sunset", sunset)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     }
 }
+
 @Composable
 private fun DefaultIcon(
     imageVector: ImageVector = Icons.Outlined.CloudOff
@@ -190,6 +216,40 @@ private fun DefaultIcon(
         imageVector = imageVector,
         contentDescription = "Default icon"
     )
+}
+
+@Composable
+private fun WeatherExtraData(label: String?, value: String?) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 8.dp,
+                end = 8.dp,
+                top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Spacer(modifier = Modifier.width(40.dp))
+        Text(
+            text = label ?: "",
+            style = TextStyle(
+                fontFamily = FontFamily.Default,
+                fontSize = 12.sp
+            )
+        )
+        Text(
+            modifier = Modifier
+                .weight(1.0f),
+            text = value ?: "",
+            textAlign = TextAlign.End,
+            style = TextStyle(
+                fontFamily = FontFamily.Default,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 12.sp
+            )
+        )
+    }
 }
 
 @SuppressLint("ViewModelConstructorInComposable")

@@ -199,7 +199,7 @@ fun DashboardPage(
             )
         }
         Surface (color = Color.Transparent) {
-            DayNightCycleAnimation()
+            DayNightCycleAnimation(startingAngle = 90.0f)
             Column(
                 modifier = Modifier.fillMaxSize(),
             ) {
@@ -370,7 +370,10 @@ fun LandingPageContent(
                     }
                 }
             else {
-                WeatherItem(weatherEntity = weatherData)
+                WeatherItem(
+                    showDetails = true,
+                    weatherEntity = weatherData
+                )
             }
         }
     }
